@@ -12,11 +12,17 @@ var gulp       = require('gulp'), // Подключаем Gulp
     autoprefixer = require('gulp-autoprefixer');// Подключаем библиотеку для автоматического добавления префиксов
 
 gulp.task('sass', function(){ // Создаем таск Sass
-    return gulp.src('common.blocks/**/*.{scss,sass}') // Берем источник
+    return gulp.src('common.blocks/**/**/*.{scss,sass}') // Берем источник
         .pipe(sass()) // Преобразуем Sass в CSS посредством gulp-sass
         .pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true })) // Создаем префиксы
         .pipe(gulp.dest('app/css')) // Выгружаем результата в папку app/css
         .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
+});
+
+gulp.task('concat-css', function() {
+    return gulp.src(['app/**/variables.css', 'app/**/mixins.css', 'app/**/scaffolding.css', 'app/**/*.css'])
+        .pipe(concat('style.css'))
+        .pipe(gulp.dest('app/css'));
 });
 
 gulp.task('browser-sync', function() { // Создаем таск browser-sync
@@ -85,7 +91,7 @@ gulp.task('clear', function (callback) {
     return cache.clearAll();
 });
 
-gulp.task('watch', ['browser-sync', 'css-nano', 'scripts'], function() {
+gulp.task('watch', ['browser-sync', 'css-nano','concat-css', 'scripts'], function() {
     gulp.watch('common.blocks/**/*.{scss,sass}', ['sass']); // Наблюдение за sass файлами в папке sass
     gulp.watch('pug/*.html', browserSync.reload); // Наблюдение за HTML файлами в корне проекта
     gulp.watch(['app/js/common.js', 'app/libs/**/*.js'], browserSync.reload);   // Наблюдение за JS файлами в папке js

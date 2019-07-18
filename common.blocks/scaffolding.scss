@@ -1,0 +1,19 @@
+@import "variables";
+body {
+    min-width: 320px;
+    margin: 0;
+    padding: 0;
+
+    font-size: 18px;
+    line-height: 27px;
+    font-family: "Arial", sans-serif;
+    color: $bodyFontColor;
+    font-style: normal;
+
+    background-color: $bg-darkgrey;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
