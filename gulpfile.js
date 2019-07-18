@@ -1,106 +1,94 @@
-const path = require('path');
+var gulp       = require('gulp'), // Подключаем Gulp
+    sass         = require('gulp-sass'), //Подключаем Sass пакет,
+    browserSync  = require('browser-sync'), // Подключаем Browser Sync
+    concat       = require('gulp-concat'), // Подключаем gulp-concat (для конкатенации файлов)
+    uglify       = require('gulp-uglifyjs'), // Подключаем gulp-uglifyjs (для сжатия JS)
+    cssnano      = require('gulp-cssnano'), // Подключаем пакет для минификации CSS
+    rename       = require('gulp-rename'), // Подключаем библиотеку для переименования файлов
+    del          = require('del'), // Подключаем библиотеку для удаления файлов и папок
+    imagemin     = require('gulp-imagemin'), // Подключаем библиотеку для работы с изображениями
+    pngquant     = require('imagemin-pngquant'), // Подключаем библиотеку для работы с png
+    cache        = require('gulp-cache'), // Подключаем библиотеку кеширования
+    autoprefixer = require('gulp-autoprefixer');// Подключаем библиотеку для автоматического добавления префиксов
 
-const Builder = require('gulp-bem-bundle-builder');
-const bundler = require('gulp-bem-bundler-fs');
-
-const gulp = require('gulp');
-const debug = require('gulp-debug');
-const filter = require('through2-filter').obj;
-const merge = require('merge2');
-const concat = require('gulp-concat');
-const gulpif = require('gulp-if');
-const gulpOneOf = require('gulp-one-of');
-const uglify = require('gulp-uglify');
-
-const bemxjst = require('gulp-bem-xjst');
-const bemhtml = bemxjst.bemhtml;
-const toHtml = bemxjst.toHtml;
-
-const postcss = require('gulp-postcss');
-const postcssImport = require('postcss-import');
-const postcssEach = require('postcss-each');
-const postcssFor = require('postcss-for');
-const postcssSimpleVars = require('postcss-simple-vars');
-const postcssCalc = require('postcss-calc');
-const postcssNested = require('postcss-nested');
-const rebemCss = require('rebem-css');
-const postcssUrl = require('postcss-url');
-const autoprefixer = require('autoprefixer');
-const postcssReporter = require('postcss-reporter');
-const csso = require('gulp-csso');
-
-const YENV = process.env.YENV || 'development';
-const isProd = YENV === 'production';
-
-const pathToYm = require.resolve('ym');
-
-const builder = Builder({
-    levels: [
-        'node_modules/bem-core/common.blocks',
-        'node_modules/bem-core/desktop.blocks',
-        'node_modules/bem-components/common.blocks',
-        'node_modules/bem-components/desktop.blocks',
-        'node_modules/bem-components/design/common.blocks',
-        'node_modules/bem-components/design/desktop.blocks',
-        'common.blocks',
-        'desktop.blocks'
-    ],
-    techMap: {
-        bemhtml: ['bemhtml.js'],
-        js: ['vanilla.js', 'browser.js', 'js'],
-        css: ['post.css', 'css']
-    }
+gulp.task('sass', function(){ // Создаем таск Sass
+    return gulp.src('common.blocks/**/*.{scss,sass}') // Берем источник
+        .pipe(sass()) // Преобразуем Sass в CSS посредством gulp-sass
+        .pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true })) // Создаем префиксы
+        .pipe(gulp.dest('app/css')) // Выгружаем результата в папку app/css
+        .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
 });
 
-gulp.task('build', () => {
-    return bundler('*.bundles/*')
-        .pipe(builder({
-            // cssdeps: bundle => bundle.src('css', {deps: true})
-            //     .pipe(concat(bundle.name + '.css.deps.js')),
-            // jsdeps: bundle => bundle.src('js', {deps: true})
-            //     .pipe(concat(bundle.name + '.js.deps.js')),
-            // bemhtmldeps: bundle => bundle.src('bemhtml', {deps: true})
-            //     .pipe(concat(bundle.name + '.bemhtml.deps.js')),
-            css: bundle =>
-                bundle.src('css')
-                    .pipe(gulpOneOf())
-                    .pipe(postcss([
-                        postcssImport(),
-                        postcssEach,
-                        postcssFor,
-                        postcssSimpleVars(),
-                        postcssCalc(),
-                        postcssNested,
-                        rebemCss,
-                        postcssUrl({ url: 'rebase' }),
-                        autoprefixer(),
-                        postcssReporter()
-                    ]))
-                    .pipe(concat(bundle.name + '.min.css'))
-                    .pipe(gulpif(isProd, csso())),
-            js: bundle =>
-                merge(
-                    gulp.src(pathToYm),
-                    bundle.src('js').pipe(filter(f => ~['vanilla.js', 'browser.js', 'js'].indexOf(f.tech))),
-                    bundle.src('js').pipe(filter(file => file.tech === 'bemhtml.js'))
-                        .pipe(concat('browser.bemhtml.js')).pipe(bemhtml({ elemJsInstances: true, exportName: 'BEMHTML' }))
-                )
-                    .pipe(concat(bundle.name + '.min.js'))
-                    .pipe(gulpif(isProd, uglify())),
-            tmpls: bundle =>
-                bundle.src('bemhtml')
-                    .pipe(concat('any.bemhtml.js'))
-                    .pipe(bemhtml({ elemJsInstances: true }))
-                    .pipe(concat(bundle.name + '.bemhtml.js')),
-            html: bundle => {
-                const bemhtmlApply = () => toHtml(bundle.target('tmpls'));
-                return gulp.src(bundle.dirname + '/*.bemjson.js')
-                    .pipe(bemhtmlApply());
-            }
-       }))
-       .on('error', console.error)
-       .pipe(debug())
-       .pipe(gulp.dest(file => path.dirname(file.path)));
+gulp.task('browser-sync', function() { // Создаем таск browser-sync
+    browserSync({ // Выполняем browserSync
+        server: { // Определяем параметры сервера
+            baseDir: 'pug' // Директория для сервера - app
+        },
+        notify: false // Отключаем уведомления
+    });
 });
 
-gulp.task('default', gulp.series('build'));
+gulp.task('scripts', function() {
+    return gulp.src([ // Берем все необходимые библиотеки
+        //'app/libs/jquery/dist/jquery.min.js', // Берем jQuery
+        //'app/libs/magnific-popup/dist/jquery.magnific-popup.min.js' // Берем Magnific Popup
+    ])
+        .pipe(concat('libs.min.js')) // Собираем их в кучу в новом файле libs.min.js
+        .pipe(uglify()) // Сжимаем JS файл
+        .pipe(gulp.dest('app/js')); // Выгружаем в папку app/js
+});
+
+gulp.task('css-nano', ['sass'], function() {
+    return gulp.src('common.blocks/*.{scss,sass}') // Выбираем файл для минификации
+        .pipe(sass()) // Преобразуем Sass в CSS посредством gulp-sass
+        .pipe(cssnano()) // Сжимаем
+        .pipe(rename({suffix: '.min'})) // Добавляем суффикс .min
+        .pipe(gulp.dest('app/css')); // Выгружаем в папку app/css
+});
+
+gulp.task('clean', function() {
+    return del.sync('dist'); // Удаляем папку dist перед сборкой
+});
+
+gulp.task('img', function() {
+    return gulp.src('common.blocks/**/image/**/*') // Берем все изображения из app
+        .pipe(cache(imagemin({ // С кешированием
+            // .pipe(imagemin({ // Сжимаем изображения без кеширования
+            interlaced: true,
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        }))/**/)
+        .pipe(gulp.dest('dist/img')); // Выгружаем на продакшен
+});
+
+gulp.task('build', ['clean', 'img', 'sass', 'scripts'], function() {
+
+    var buildCss = gulp.src([ // Переносим библиотеки в продакшен
+        'app/css/*.css',
+        'app/css/libs.min.css'
+    ])
+        .pipe(gulp.dest('dist/css'))
+
+    var buildFonts = gulp.src('app/fonts/**/*') // Переносим шрифты в продакшен
+        .pipe(gulp.dest('dist/fonts'))
+
+    var buildJs = gulp.src('app/js/**/*') // Переносим скрипты в продакшен
+        .pipe(gulp.dest('dist/js'))
+
+    var buildHtml = gulp.src('app/*.html') // Переносим HTML в продакшен
+        .pipe(gulp.dest('dist'));
+
+});
+
+gulp.task('clear', function (callback) {
+    return cache.clearAll();
+});
+
+gulp.task('watch', ['browser-sync', 'css-nano', 'scripts'], function() {
+    gulp.watch('common.blocks/**/*.{scss,sass}', ['sass']); // Наблюдение за sass файлами в папке sass
+    gulp.watch('pug/*.html', browserSync.reload); // Наблюдение за HTML файлами в корне проекта
+    gulp.watch(['app/js/common.js', 'app/libs/**/*.js'], browserSync.reload);   // Наблюдение за JS файлами в папке js
+});
+
+gulp.task('default', ['watch']);

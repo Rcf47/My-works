@@ -1,0 +1,7 @@
+include ../../pug/Includes/config
+nav(class="main-nav")
+    +button('main-nav__toggle', 'Открыть меню')
+    .main-nav__wrapper
+        +list('user-list', 'main-nav__list','site-list__item','','Главная','Наши работы','Записаться', 'Контакты', 'HTML Academy')
+        +list('user-list', 'main-nav__list', 'user-list__item', 'user-list__link', 'Войти')
+

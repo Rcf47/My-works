@@ -1,0 +1,44 @@
+include ../../pug/Includes/config
+
+main.page-main
+    h1.visually-hidden Барбершоп "Бородинский" - истинно мужская классика
+    section.stats
+        header.stats__header
+            h2.visually-hidden Статистика Барбершопа
+            b.stats__slogan Стрижка у нас это выгодно
+            p.stats__intro Мужская стрижка требует точного подхода. Обратимся к статистике:
+            small.stats__legend.stats__legend--top
+                sup *
+                | Приведенные данные ложь
+        table.stats__list
+            +tableRow('stats__value', 'stats__field', '1 500<sup>*</sup>','рублей<br> вложений')
+            +tableRow('stats__value', 'stats__field', '7 200','секунд<br> времени мастера')
+            +tableRow('stats__value', 'stats__field', '90 000','постриженных<br> волос')
+            +tableRow('stats__value', 'stats__field', '500 000<sup>*</sup>','лайков<br> и комплиментов')
+        small.stats__legend.stats__legend--bottom
+            sup *
+            | Приведенные данные ложь
+    section.advantages
+        h2.visually-hidden Наши преимущества
+        a.button.reviews__write(href="#") Оставить свой
+        .advantages__wrapper.slider
+            +simpleListAdvantages('advantages__list slider__list', 'advantages__item slider__item','advantages__title', 'advantages__description')
+            +toggle('advantages__toggles')
+    section.news
+        .news__wrapper
+            h2.news__title Новости и акции
+            +simpleListNews('news__list', 'news__item','news__date', 'news__text', 'news__day')
+            a.button.news__to-all(href="#") Показать все
+    section.reviews
+        .slider.reviews__wrapper
+            h2.reviews__title Отзывы о нас
+            .reviews__list.slider__list
+                +blockquote('reviews__item slider__item', 'reviews__author-picture', 'reviews__author-image', 'reviews__author-name', 'reviews__text')
+                button.reviews__prev(type="button") Предыдущий отзыв
+                button.reviews__next(type="button") Следующий отзыв
+            +toggle('reviews__toggles')
+
+
+
+
+

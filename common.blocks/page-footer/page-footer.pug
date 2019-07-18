@@ -1,0 +1,15 @@
+include ../../pug/Includes/config
+
+footer.page-footer
+    .page-footer__wrapper
+        .contacts.page-footer__contacts
+            b.contacts__title Барбершоп "Бородинский"
+            p.contacts__text  г. Санкт-Петербург, ул. Большая Конюшенная 19/8<br>
+                a.contacts__phone(href="tel:+78125556666")
+                    span.contacts__phone-mobile Тел.:<span> + 7 (812) 555-66-66
+        .social.page-footer__social
+            b.social__title Давайте дружить!
+            +listSocial('social__list', 'social__item', 'social__link')
+        .copyright.page-footer__copyright
+            b.copyright__text Разработано:
+            a.button.copyright__link(href="#") HTML Academy

@@ -1,0 +1,78 @@
+- var arrayTitleText = ['Быстро', 'Круто', 'Дорого']
+- var arrayListMod = ['advantages__list--fast','advantages__list--cool','advantages__list--price']
+- var arrayParagraphText = ['Мы делаем свою работу быстро! Два часа пролетят незаметно и вы - счастливый обладатель стрижки - минутки','Забудьте, как вы стриглись раньше. Мы сделаем из вас звезду футбола или кино. Во всяком случае внешне.','Наши мастера — профессионалы своего делаи не могут стоить дёшево. К тому же, разве цена не даёт определённый статус?'];
+- var arrayIndex = [0, 1, 2];
+- var arrayDateTime = ['2017-09-29', '2017-09-19', '2017-09-09'];
+- var arrayDayTime = ['29', '19', '9'];
+- var arrayParagraphNewsText = ['Нам наконец завезли Ягермайстер! Теперь вы можете пропусить стаканчик во время стрижки.', 'В нашей команде пополнение, Борис «Бритва» Стригунец, пополнил наши стройные ряды. Спешите записаться!', 'Все дорожает, а наши стрижки нет! Как так? Приходите, постригитесь и узнаете, в чем здесь подвох!'];
+- var arrayImageSource = ['Image/picture-travis.jpg', 'Image/picture-john.jpg', 'Image/picture-ivan.jpg'];
+- var arrayWidthImage = ['50', '50', '50'];
+- var arrayHeightImage = ['33', '33', '33'];
+- var arrayAltImage = ['Фото Трэвиса Баркера', 'Фото Джона Смита', 'Фото Ивана Бородайло'];
+- var arrayAuthorName = ['Трэвис Баркер', 'Джон Смит', 'Иван Бородайло'];
+- var arrayParagraphReviewesText = ['Спасибо за лысину! Был проездом в Москве, заскочил побриться, чтобы было видно новую татуировку!', 'Отличную стрижку мне сделали ребята.', 'В Бородинском ваша борода в надежных руках!'];
+- var arraySocialHrefLink = ['https://vk.com', 'https://facebook.com', 'https://instagram.com'];
+- var arrayLinkMod = ['social__link--vkontakte', 'social__link--facebook', 'social__link--instagram']
+- var arraySocialLinkText = ['Мы в Вконтакте', 'Мы в Фейсбуке', 'Мы в Инстаграме'];
+
+
+mixin list(classBlockName,classElemName,classChildElemName,classLinkElemName,...items)
+    ul(class=classBlockName + " " + classElemName)
+        each item in items
+            if(item === 'Главная')
+                li(class=classChildElemName + ' ' + classChildElemName + '--active')
+                    a(class="" + classLinkElemName href="#")= item
+            else
+                li(class="" + classChildElemName)
+                a(class="" + classLinkElemName href="#")= item
+
+mixin listSocial(classBlockName,classChildElemName,classLinkElemName)
+    ul(class="" + classBlockName)
+        each i in arrayIndex
+            li(class="" + classChildElemName)
+            a(class=classLinkElemName + " " + arrayLinkMod[i] href="" + arraySocialHrefLink[i])= arraySocialLinkText[i]
+
+mixin simpleListAdvantages(classUlName, classLiName,classChildTitleName,classChildParagraphName)
+    ul(class="" + classUlName)
+        each i in arrayIndex
+            li(class=classLiName + " " + arrayListMod[i])
+                h3(class="" + classChildTitleName)= arrayTitleText[i]
+                p(class="" + classChildParagraphName)= arrayParagraphText[i]
+
+mixin simpleListNews(classUlName, classLiName,classChildTimeName,classChildParagraphName, classBoldDate)
+    ul(class="" + classUlName)
+        each i in arrayIndex
+            li(class=classLiName + " " + arrayListMod[i])
+                time(class="" + classChildTimeName datetime="" + arrayDateTime[i])
+                    b(class="" + classBoldDate)= arrayDayTime[i]
+                    | сент
+                p(class="" + classChildParagraphName)= arrayParagraphNewsText[i]
+
+mixin blockquote(classBlockquote, classParagraphPicture, classImage, classCite, classParagraphText)
+    each i in arrayIndex
+        blockquote(class="" + classBlockquote)
+            p(class="" + classParagraphPicture)
+                img(class="" + classImage src="" + arrayImageSource[i]
+                    width="" + arrayWidthImage[i]
+                    height="" + arrayHeightImage[i]
+                    alt="" + arrayAltImage[i])
+            cite(class="" + classCite)= arrayAuthorName[i]
+            p(class="" + classParagraphText)= arrayParagraphReviewesText[i]
+
+
+mixin button(className, buttonText)
+    button(type="button" class="" + className)= buttonText
+
+mixin toggle(classElemToggle)
+    p(class="" + classElemToggle).slider__toggles
+        button(class="slider__toggle" type="button") 1
+        button(class="slider__toggle" type="button") 2
+        button(class="slider__toggle" type="button") 3
+
+mixin table(className)
+    table(class="" + className)
+
+mixin tableRow(classNameTd1, classNameTd2, textTd1, textTd2)
+    tr
+        td(class="" + classNameTd1)= textTd1
+        td(class="" + classNameTd2)= textTd2
